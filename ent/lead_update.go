@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"stilyng94/fiber-crm/ent/lead"
 	"stilyng94/fiber-crm/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,12 @@ type LeadUpdate struct {
 // Where appends a list predicates to the LeadUpdate builder.
 func (lu *LeadUpdate) Where(ps ...predicate.Lead) *LeadUpdate {
 	lu.mutation.Where(ps...)
+	return lu
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (lu *LeadUpdate) SetUpdateTime(t time.Time) *LeadUpdate {
+	lu.mutation.SetUpdateTime(t)
 	return lu
 }
 
@@ -62,6 +69,7 @@ func (lu *LeadUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	lu.defaults()
 	if len(lu.hooks) == 0 {
 		if err = lu.check(); err != nil {
 			return 0, err
@@ -116,6 +124,14 @@ func (lu *LeadUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (lu *LeadUpdate) defaults() {
+	if _, ok := lu.mutation.UpdateTime(); !ok {
+		v := lead.UpdateDefaultUpdateTime()
+		lu.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (lu *LeadUpdate) check() error {
 	if v, ok := lu.mutation.Name(); ok {
@@ -158,6 +174,13 @@ func (lu *LeadUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := lu.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lead.FieldUpdateTime,
+		})
 	}
 	if value, ok := lu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -206,6 +229,12 @@ type LeadUpdateOne struct {
 	mutation *LeadMutation
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (luo *LeadUpdateOne) SetUpdateTime(t time.Time) *LeadUpdateOne {
+	luo.mutation.SetUpdateTime(t)
+	return luo
+}
+
 // SetName sets the "name" field.
 func (luo *LeadUpdateOne) SetName(s string) *LeadUpdateOne {
 	luo.mutation.SetName(s)
@@ -248,6 +277,7 @@ func (luo *LeadUpdateOne) Save(ctx context.Context) (*Lead, error) {
 		err  error
 		node *Lead
 	)
+	luo.defaults()
 	if len(luo.hooks) == 0 {
 		if err = luo.check(); err != nil {
 			return nil, err
@@ -305,6 +335,14 @@ func (luo *LeadUpdateOne) Exec(ctx context.Context) error {
 func (luo *LeadUpdateOne) ExecX(ctx context.Context) {
 	if err := luo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (luo *LeadUpdateOne) defaults() {
+	if _, ok := luo.mutation.UpdateTime(); !ok {
+		v := lead.UpdateDefaultUpdateTime()
+		luo.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -367,6 +405,13 @@ func (luo *LeadUpdateOne) sqlSave(ctx context.Context) (_node *Lead, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := luo.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lead.FieldUpdateTime,
+		})
 	}
 	if value, ok := luo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

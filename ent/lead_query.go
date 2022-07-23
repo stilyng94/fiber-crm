@@ -253,12 +253,12 @@ func (lq *LeadQuery) Clone() *LeadQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreateTime time.Time `json:"create_time,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Lead.Query().
-//		GroupBy(lead.FieldName).
+//		GroupBy(lead.FieldCreateTime).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -282,11 +282,11 @@ func (lq *LeadQuery) GroupBy(field string, fields ...string) *LeadGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreateTime time.Time `json:"create_time,omitempty"`
 //	}
 //
 //	client.Lead.Query().
-//		Select(lead.FieldName).
+//		Select(lead.FieldCreateTime).
 //		Scan(ctx, &v)
 //
 func (lq *LeadQuery) Select(fields ...string) *LeadSelect {

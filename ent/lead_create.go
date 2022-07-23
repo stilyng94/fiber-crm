@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"stilyng94/fiber-crm/ent/lead"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -17,6 +18,34 @@ type LeadCreate struct {
 	config
 	mutation *LeadMutation
 	hooks    []Hook
+}
+
+// SetCreateTime sets the "create_time" field.
+func (lc *LeadCreate) SetCreateTime(t time.Time) *LeadCreate {
+	lc.mutation.SetCreateTime(t)
+	return lc
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (lc *LeadCreate) SetNillableCreateTime(t *time.Time) *LeadCreate {
+	if t != nil {
+		lc.SetCreateTime(*t)
+	}
+	return lc
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (lc *LeadCreate) SetUpdateTime(t time.Time) *LeadCreate {
+	lc.mutation.SetUpdateTime(t)
+	return lc
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (lc *LeadCreate) SetNillableUpdateTime(t *time.Time) *LeadCreate {
+	if t != nil {
+		lc.SetUpdateTime(*t)
+	}
+	return lc
 }
 
 // SetName sets the "name" field.
@@ -54,6 +83,7 @@ func (lc *LeadCreate) Save(ctx context.Context) (*Lead, error) {
 		err  error
 		node *Lead
 	)
+	lc.defaults()
 	if len(lc.hooks) == 0 {
 		if err = lc.check(); err != nil {
 			return nil, err
@@ -117,8 +147,26 @@ func (lc *LeadCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (lc *LeadCreate) defaults() {
+	if _, ok := lc.mutation.CreateTime(); !ok {
+		v := lead.DefaultCreateTime()
+		lc.mutation.SetCreateTime(v)
+	}
+	if _, ok := lc.mutation.UpdateTime(); !ok {
+		v := lead.DefaultUpdateTime()
+		lc.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (lc *LeadCreate) check() error {
+	if _, ok := lc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "Lead.create_time"`)}
+	}
+	if _, ok := lc.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "Lead.update_time"`)}
+	}
 	if _, ok := lc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Lead.name"`)}
 	}
@@ -178,6 +226,22 @@ func (lc *LeadCreate) createSpec() (*Lead, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if value, ok := lc.mutation.CreateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lead.FieldCreateTime,
+		})
+		_node.CreateTime = value
+	}
+	if value, ok := lc.mutation.UpdateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lead.FieldUpdateTime,
+		})
+		_node.UpdateTime = value
+	}
 	if value, ok := lc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -227,6 +291,7 @@ func (lcb *LeadCreateBulk) Save(ctx context.Context) ([]*Lead, error) {
 	for i := range lcb.builders {
 		func(i int, root context.Context) {
 			builder := lcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*LeadMutation)
 				if !ok {

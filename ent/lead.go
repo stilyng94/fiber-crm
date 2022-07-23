@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"stilyng94/fiber-crm/ent/lead"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -15,6 +16,10 @@ type Lead struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// UpdateTime holds the value of the "update_time" field.
+	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Company holds the value of the "company" field.
@@ -34,6 +39,8 @@ func (*Lead) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case lead.FieldName, lead.FieldCompany, lead.FieldEmail, lead.FieldPhone:
 			values[i] = new(sql.NullString)
+		case lead.FieldCreateTime, lead.FieldUpdateTime:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Lead", columns[i])
 		}
@@ -55,6 +62,18 @@ func (l *Lead) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			l.ID = int(value.Int64)
+		case lead.FieldCreateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+			} else if value.Valid {
+				l.CreateTime = value.Time
+			}
+		case lead.FieldUpdateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+			} else if value.Valid {
+				l.UpdateTime = value.Time
+			}
 		case lead.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -107,6 +126,12 @@ func (l *Lead) String() string {
 	var builder strings.Builder
 	builder.WriteString("Lead(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", l.ID))
+	builder.WriteString("create_time=")
+	builder.WriteString(l.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("update_time=")
+	builder.WriteString(l.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(l.Name)
 	builder.WriteString(", ")

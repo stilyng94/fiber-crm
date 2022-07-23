@@ -25,7 +25,6 @@ func InitializeDatabase() {
 }
 
 func Migrate() {
-	//docker://postgres
 
 	ctx := context.Background()
 	// Create a local migration directory able to understand golang-migrate migration files for replay.
@@ -40,7 +39,7 @@ func Migrate() {
 		schema.WithDialect(dialect.Postgres),        // Ent dialect to use
 		schema.WithFormatter(sqltool.GolangMigrateFormatter),
 	}
-	err = migrate.NamedDiff(ctx, viper.GetString("DATABASE_URL"), "my_migration", opts...)
+	err = migrate.NamedDiff(ctx, viper.GetString("MIGRATION_DATABASE_URL"), "my_migration", opts...)
 	if err != nil {
 		log.Fatalf("failed generating migration file: %v", err)
 	}

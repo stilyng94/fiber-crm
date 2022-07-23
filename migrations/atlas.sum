@@ -1,3 +1,5 @@
-h1:H4+MI3tl8QkhHrBAxHzuxGH0EUudBoTczwAJa5GlMgQ=
+h1:ZmIkDnzMCEuAPtgDFozBfDOrHczZ0R3iP4MfB5qKOnc=
 20220723184344_my_migration.down.sql h1:IKSF8e8n9NzN2lpVD2W7GWAzdtXpb/8t4eRl3GiR0BY=
 20220723184344_my_migration.up.sql h1:VakqLT9GcufhDZuxUJLGlVoGJKTRvIfYAc0Xg+NlyjM=
+20220723230044_my_migration.down.sql h1:8azBNzhft9cO0Pt/4amGo7cE85wIc83L7RfeO69jU5g=
+20220723230044_my_migration.up.sql h1:HUskMqnRrqRQLWpOpu3niSngkUhb8iyfmPdTIYf45sE=
