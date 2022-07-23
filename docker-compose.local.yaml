@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:14-alpine
+    env_file: .env
+    container_name: db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=go-crm
+      - POSTGRES_PASSWORD=go-crm
+      - POSTGRES_DB=go-crm
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: bitnami/redis:latest
+    env_file: .env
+    container_name: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+
+
+volumes:
+  pgdata:
